@@ -70,7 +70,6 @@ pyinstaller==5.1
 pyinstaller-hooks-contrib==2022.7
 pymemcache==3.2.0
 pymongo==3.11.0
-pymssql @ file:///C:/pymssql-2.1.4-cp38-cp38-win_amd64.whl
 PyMySQL==0.10.0
 PyNaCl==1.4.0
 pyOpenSSL==19.1.0

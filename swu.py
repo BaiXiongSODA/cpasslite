@@ -1,8 +1,8 @@
 import ssl
+import re
 import time
 
 import undetected_chromedriver as uc
-from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
@@ -43,9 +43,9 @@ def JWXTcookie(driver=None, account='', password=''):
     print("获取调用参数:", driver, account, password)
     if driver is None:
         return create_driver()
-    driver.get(
-        'http://uaaap-swu-edu-cn-s.sangfor.vpn.swu.edu.cn:8118/cas/login?service=https%3A%2F%2Fspvpn.swu.edu.cn%2Fauth%2Fcas_validate%3Fentry_id%3D1')
     try:
+        driver.get(
+            'http://uaaap-swu-edu-cn-s.sangfor.vpn.swu.edu.cn:8118/cas/login?service=https%3A%2F%2Fspvpn.swu.edu.cn%2Fauth%2Fcas_validate%3Fentry_id%3D1')
         element = WebDriverWait(driver, timeout=10, poll_frequency=0.5).until(
             EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/a[2]'))
         )
@@ -64,17 +64,17 @@ def JWXTcookie(driver=None, account='', password=''):
 
     try:
         print(driver.current_url)
-        soup = BeautifulSoup(driver.page_source, 'lxml')
-        msg = soup.select('#msg')
+        msg = re.findall(r'<font.*?id.*?>(.*)<\/font>',driver.page_source)
         if len(msg) > 0:
             close_driver(driver)
             return {
-                "state": msg[0].string,
+                "state": msg[0],
             }
-        element = WebDriverWait(driver, timeout=10, poll_frequency=0.5).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="rsList"]/div[1]/div/ul/li[1]/a/p'))
-        )
-        driver.find_element(by=By.XPATH, value='//*[@id="rsList"]/div[1]/div/ul/li[1]/a/p').click()
+        else:
+            element = WebDriverWait(driver, timeout=10, poll_frequency=0.5).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="rsList"]/div[1]/div/ul/li[1]/a/p'))
+            )
+            driver.find_element(by=By.XPATH, value='//*[@id="rsList"]/div[1]/div/ul/li[1]/a/p').click()
     except TimeoutException:
         close_driver(driver)
         return {
